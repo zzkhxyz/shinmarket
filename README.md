@@ -33,6 +33,4 @@ https://zzkhxyz.github.io/shinmarket/
 - Адаптирован под мобильный браузер (viewport, safe-area, iOS/Android)
 
 ## 📋 Контекст
-
-Прототип разработан в рамках производственной практики (BDA-2401).  
 Основан на анализе UX-паттернов казахстанских приложений: Kaspi.kz, Kolesa.kz, Krisha.kz, Wildberries.
