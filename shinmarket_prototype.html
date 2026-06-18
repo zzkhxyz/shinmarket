@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>ШинМаркет — прототип</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#F0F2F5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+.app{width:100%;max-width:430px;height:100svh;margin:0 auto;display:flex;flex-direction:column;background:#F0F2F5;position:relative;overflow:hidden}
+.sbar{background:#1A3A6B;color:#fff;padding:env(safe-area-inset-top,10px) 20px 8px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:500;flex-shrink:0}
+.scr{display:none;flex-direction:column;flex:1;overflow:hidden}
+.scr.on{display:flex}
+.topbar{background:#1A3A6B;padding:12px 16px;flex-shrink:0}
+.topbar-title{font-size:17px;font-weight:500;color:#fff}
+.topbar-sub{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+.tabbar{background:#fff;display:flex;flex-shrink:0;box-shadow:0 -2px 12px rgba(0,0,0,0.10);padding-bottom:env(safe-area-inset-bottom,0px)}
+.ti-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;cursor:pointer;color:#9AA5B4;font-size:10px;gap:3px;background:none;border:none}
+.ti-btn i{font-size:22px}
+.ti-btn.on{color:#1A3A6B}
+.sell-fab{position:relative;top:-14px;background:#E8A020;border-radius:50%;width:52px;height:52px;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,160,32,0.5);color:#fff;font-size:11px;margin:0 auto;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.sell-fab i{font-size:22px}
+.card-shadow{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.08),0 1px 3px rgba(0,0,0,0.05)}
+.search-pill{display:flex;align-items:center;background:rgba(255,255,255,0.18);border-radius:12px;padding:9px 14px;margin-top:10px;gap:8px;color:rgba(255,255,255,0.85);font-size:14px;cursor:pointer}
+.banner{background:#1A3A6B;padding:16px;margin:12px 16px 0;border-radius:16px;box-shadow:0 4px 16px rgba(26,58,107,0.25)}
+.banner-badge{background:#E8A020;color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:6px;font-weight:500}
+.banner-title{font-size:16px;font-weight:500;color:#fff;margin-bottom:3px}
+.banner-sub{font-size:12px;color:rgba(255,255,255,0.75)}
+.sec-title{font-size:15px;font-weight:500;color:#1A1C23;padding:14px 16px 8px}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 4px}
+.cat-item{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:10px 4px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.07)}
+.cat-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.cat-item span{font-size:10px;color:#6B7280;text-align:center;line-height:1.2}
+.pcard{background:#fff;border-radius:16px;padding:12px;display:flex;gap:12px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);margin:0 16px 10px}
+.pimg{width:76px;height:76px;border-radius:12px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;position:relative}
+.pinfo{flex:1;min-width:0}
+.pname{font-size:14px;font-weight:500;color:#1A1C23;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psize{font-size:12px;color:#6B7280;margin-bottom:4px}
+.pprice{font-size:16px;font-weight:500;color:#1A3A6B}
+.ploc{font-size:11px;color:#9AA5B4;display:flex;align-items:center;gap:2px;margin-top:2px}
+.hbtn{color:#D1D5DB;background:none;border:none;font-size:18px;cursor:pointer;padding:4px}
+.hbtn.liked{color:#E24B4A}
+.bn{background:#E6F1FB;color:#0C447C;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:500}
+.bu{background:#FAEEDA;color:#633806;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:500}
+.bv{background:#EAF3DE;color:#27500A;font-size:11px;padding:2px 7px;border-radius:5px}
+.frow{display:flex;gap:7px;padding:10px 16px;overflow-x:auto;border-bottom:0.5px solid rgba(0,0,0,0.06);flex-shrink:0;background:#fff;-webkit-overflow-scrolling:touch}
+.frow::-webkit-scrollbar{display:none}
+.fchip{white-space:nowrap;border:1px solid #E5E7EB;border-radius:20px;padding:7px 13px;font-size:12px;background:#fff;color:#6B7280;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.fchip.on{background:#1A3A6B;color:#fff;border-color:#1A3A6B}
+.gallery{background:#EEF2F8;height:220px;display:flex;align-items:center;justify-content:center;font-size:88px;position:relative;flex-shrink:0}
+.gbk{position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.95);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.gsh{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.95);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.gdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.15)}
+.dot.on{background:#1A3A6B}
+.ichip{background:#fff;border-radius:8px;padding:5px 10px;font-size:12px;color:#4B5563;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.seller-card{background:#fff;border-radius:16px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07)}
+.savatar{width:46px;height:46px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#0C447C;flex-shrink:0}
+.btn-main{background:#1A3A6B;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 4px 16px rgba(26,58,107,0.35)}
+.btn-sec{background:#fff;border:1.5px solid #1A3A6B;color:#1A3A6B;border-radius:14px;padding:15px 14px;font-size:15px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.btn-icon{background:#fff;border:1px solid #E5E7EB;color:#4B5563;border-radius:12px;padding:12px 14px;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.form-section{background:#fff;border-radius:16px;margin:12px 16px 0;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07)}
+.form-label{font-size:12px;font-weight:500;color:#6B7280;margin-bottom:6px;margin-top:14px;display:block}
+.form-label:first-child{margin-top:0}
+.finput{width:100%;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;font-size:16px;color:#1A1C23;background:#F9FAFB;outline:none;-webkit-appearance:none}
+.fselect{width:100%;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;font-size:16px;color:#1A1C23;background:#F9FAFB;outline:none;-webkit-appearance:none}
+.photo-row{display:flex;gap:8px;margin-top:6px}
+.photo-slot{width:76px;height:76px;border-radius:12px;border:1.5px dashed #CBD5E1;display:flex;align-items:center;justify-content:center;font-size:24px;color:#94A3B8;cursor:pointer;background:#F8FAFC}
+.photo-slot.filled{background:#EEF2F8;border-style:solid;border-color:#B5D4F4;font-size:32px}
+.pay-option{background:#fff;border-radius:14px;padding:14px 16px;margin:0 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.07);border:2px solid transparent}
+.pay-option.sel{border-color:#1A3A6B;box-shadow:0 2px 12px rgba(26,58,107,0.15)}
+.pay-radio{width:22px;height:22px;border-radius:50%;border:2px solid #D1D5DB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-option.sel .pay-radio{border-color:#1A3A6B}
+.pay-radio-inner{width:12px;height:12px;border-radius:50%;background:#1A3A6B;display:none}
+.pay-option.sel .pay-radio-inner{display:block}
+.order-summary{background:#fff;border-radius:16px;margin:12px 16px 0;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07)}
+.orow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px}
+.orow:last-child{border-bottom:none;font-weight:500;font-size:15px;padding-top:12px;color:#1A3A6B}
+.rating-big{background:#fff;border-radius:16px;margin:12px 16px 0;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:flex;gap:16px;align-items:center}
+.rating-num{font-size:42px;font-weight:500;color:#1A3A6B;line-height:1}
+.rbar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.rbar-track{flex:1;height:6px;background:#F0F2F5;border-radius:3px;overflow:hidden}
+.rbar-fill{height:100%;border-radius:3px;background:#E8A020}
+.rev-card{background:#fff;border-radius:14px;padding:14px;margin:0 16px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.07)}
+.rev-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rev-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.rev-name{font-size:14px;font-weight:500;color:#1A1C23}
+.rev-date{font-size:11px;color:#9AA5B4}
+.rev-stars{display:flex;gap:2px;margin-bottom:7px}
+.rev-text{font-size:13px;color:#4B5563;line-height:1.6}
+.rev-photo{width:62px;height:62px;border-radius:10px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;font-size:28px;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.hist-item{background:#fff;border-radius:14px;margin:0 16px 10px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.07)}
+.hist-status{font-size:11px;font-weight:500;padding:3px 9px;border-radius:6px;display:inline-block;margin-bottom:8px}
+.hs-del{background:#EAF3DE;color:#27500A}
+.hs-wait{background:#FAEEDA;color:#633806}
+.hist-img{width:62px;height:62px;border-radius:10px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.reo-btn{margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.06);display:flex;gap:8px}
+.reo-btn button{flex:1;border:1px solid #E5E7EB;border-radius:10px;padding:9px;font-size:13px;background:#fff;cursor:pointer;color:#4B5563}
+.reo-btn .rb-main{background:#1A3A6B;color:#fff;border-color:#1A3A6B;box-shadow:0 2px 6px rgba(26,58,107,0.25)}
+.step-row{display:flex;align-items:center;padding:14px 16px 8px}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;z-index:1}
+.step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;background:#D1D5DB;color:#fff}
+.step.done .step-circle{background:#1A3A6B}
+.step.cur .step-circle{background:#E8A020}
+.step-label{font-size:10px;color:#9AA5B4;margin-top:4px;text-align:center}
+.step.done .step-label,.step.cur .step-label{color:#1A3A6B}
+.step-line{flex:1;height:2px;background:#D1D5DB;position:relative;top:-10px;z-index:0}
+.step-line.done{background:#1A3A6B}
+.profile-hdr{background:#1A3A6B;padding:16px 16px 20px}
+.pavatar{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500;color:#fff}
+.menu-item{display:flex;align-items:center;padding:15px 16px;gap:14px;cursor:pointer;border-bottom:0.5px solid rgba(0,0,0,0.05);background:#fff}
+.menu-item:last-child{border-bottom:none}
+.mic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toggle{width:44px;height:26px;border-radius:13px;background:#D1D5DB;position:relative;cursor:pointer;flex-shrink:0}
+.toggle.on{background:#1A3A6B}
+.tthumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle.on .tthumb{transform:translateX(18px)}
+.onboard-top{background:#1A3A6B;padding:48px 24px 32px;text-align:center}
+.feat-item{display:flex;align-items:center;gap:14px;font-size:15px;color:#1A1C23}
+.feat-ic{width:42px;height:42px;border-radius:12px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:#1A3A6B}
+.lang-opt{flex:1;padding:11px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;text-align:center;cursor:pointer;color:#6B7280;background:#fff}
+.lang-opt.sel{border-color:#1A3A6B;color:#1A3A6B;background:#EEF2F8;font-weight:500}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- STATUS BAR -->
+<div class="sbar">
+  <span id="time-display">9:41</span>
+  <span style="display:flex;gap:5px;align-items:center">
+    <i class="ti ti-wifi" style="font-size:14px"></i>
+    <i class="ti ti-battery-2" style="font-size:14px"></i>
+  </span>
+</div>
+
+<!-- ONBOARD -->
+<div id="s-onboard" class="scr on">
+  <div class="onboard-top">
+    <div style="font-size:34px;font-weight:700;letter-spacing:-1px;color:#fff">ШинМаркет</div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px">Шиналар · Казахстан</div>
+    <div style="font-size:80px;margin:16px 0 0">🛞</div>
+  </div>
+  <div class="scroll-area" style="padding:24px 20px">
+    <p style="font-size:13px;color:#6B7280;margin-bottom:14px;font-weight:500">Выберите язык / Тіл таңдаңыз</p>
+    <div style="display:flex;gap:10px;margin-bottom:22px">
+      <button class="lang-opt sel" id="lang-ru" onclick="selLang('ru')">🇷🇺 Русский</button>
+      <button class="lang-opt" id="lang-kz" onclick="selLang('kz')">🇰🇿 Қазақша</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:28px">
+      <div class="feat-item"><div class="feat-ic"><i class="ti ti-search"></i></div>Быстрый поиск шин по размеру и бренду</div>
+      <div class="feat-item"><div class="feat-ic"><i class="ti ti-message-circle"></i></div>Чат с продавцом прямо в приложении</div>
+      <div class="feat-item"><div class="feat-ic"><i class="ti ti-tag"></i></div>Новые и б/у шины — магазины и частные лица</div>
+    </div>
+    <button class="btn-main" style="width:100%;font-size:16px;padding:16px" onclick="go('home')">Начать / Бастау →</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="s-home" class="scr">
+  <div class="topbar">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div style="font-size:12px;color:rgba(255,255,255,0.65)">Алматы</div><div style="font-size:17px;font-weight:500;color:#fff">ШинМаркет 🛞</div></div>
+      <button style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px" aria-label="Уведомления"><i class="ti ti-bell"></i></button>
+    </div>
+    <div class="search-pill" onclick="go('catalog')">
+      <i class="ti ti-search"></i><span>215/60 R16 или бренд...</span>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:12px">
+    <div class="banner">
+      <div class="banner-badge">Акция · До 31 июля</div>
+      <div class="banner-title">Летние шины до −30%</div>
+      <div class="banner-sub">Bridgestone, Michelin, Pirelli</div>
+    </div>
+    <div class="sec-title">Категории</div>
+    <div class="cat-grid">
+      <div class="cat-item" onclick="go('catalog')"><div class="cat-ic" style="background:#E6F1FB;color:#185FA5"><i class="ti ti-circle"></i></div><span>Новые шины</span></div>
+      <div class="cat-item" onclick="go('catalog')"><div class="cat-ic" style="background:#FAEEDA;color:#854F0B"><i class="ti ti-rotate"></i></div><span>Б/у шины</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#E1F5EE;color:#0F6E56"><i class="ti ti-snowflake"></i></div><span>Зимние</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#FBEAF0;color:#993556"><i class="ti ti-sun"></i></div><span>Летние</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#EAF3DE;color:#3B6D11"><i class="ti ti-wind"></i></div><span>Всесезон.</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#EEEDFE;color:#534AB7"><i class="ti ti-settings"></i></div><span>Диски</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#FAEEDA;color:#854F0B"><i class="ti ti-truck"></i></div><span>Грузовые</span></div>
+      <div class="cat-item"><div class="cat-ic" style="background:#F1EFE8;color:#5F5E5A"><i class="ti ti-dots"></i></div><span>Все</span></div>
+    </div>
+    <div class="sec-title">Популярные предложения</div>
+    <div class="pcard" onclick="go('detail')">
+      <div class="pimg">🛞<span style="position:absolute;top:4px;left:4px" class="bn">НОВЫЕ</span></div>
+      <div class="pinfo">
+        <div class="pname">Bridgestone Turanza T005</div>
+        <div class="psize">215/60 R16 · 4 шт. · Лето</div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">84 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+        <div class="ploc"><i class="ti ti-map-pin" style="font-size:11px"></i>Алматы, 2.3 км</div>
+      </div>
+    </div>
+    <div class="pcard" onclick="go('detail')">
+      <div class="pimg">🔄<span style="position:absolute;top:4px;left:4px" class="bu">Б/У</span></div>
+      <div class="pinfo">
+        <div class="pname">Michelin Primacy 4</div>
+        <div class="psize">205/55 R16 · 2 шт. · Лето</div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">22 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+        <div class="ploc"><i class="ti ti-map-pin" style="font-size:11px"></i>Бостандык, 4.1 км</div>
+      </div>
+    </div>
+    <div style="margin:4px 16px 16px">
+      <div style="background:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+        <div style="font-size:28px">💳</div>
+        <div><div style="font-size:14px;font-weight:500;color:#1A1C23">Оплата через Kaspi.kz</div><div style="font-size:12px;color:#6B7280">Рассрочка 0-0-24 доступна</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <button class="ti-btn on" onclick="go('home')"><i class="ti ti-home"></i>Главная</button>
+    <button class="ti-btn" onclick="go('catalog')"><i class="ti ti-search"></i>Поиск</button>
+    <button class="sell-fab" onclick="go('sell')"><i class="ti ti-plus"></i><span style="font-size:9px">Продать</span></button>
+    <button class="ti-btn"><i class="ti ti-message-circle"></i>Чат</button>
+    <button class="ti-btn" onclick="go('profile')"><i class="ti ti-user"></i>Профиль</button>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div id="s-catalog" class="scr">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="go('home')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px"><i class="ti ti-arrow-left"></i></button>
+      <div style="flex:1;background:rgba(255,255,255,0.18);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.9);font-size:14px"><i class="ti ti-search"></i>215/60 R16...</div>
+      <button style="background:rgba(255,255,255,0.18);border:none;color:#fff;font-size:20px;cursor:pointer;padding:9px;border-radius:10px"><i class="ti ti-adjustments-horizontal"></i></button>
+    </div>
+  </div>
+  <div class="frow">
+    <button class="fchip on">Все</button>
+    <button class="fchip">Новые</button>
+    <button class="fchip">Б/у</button>
+    <button class="fchip">❄️ Зима</button>
+    <button class="fchip">☀️ Лето</button>
+    <button class="fchip">Алматы</button>
+  </div>
+  <div class="scroll-area" style="padding-top:12px">
+    <div style="font-size:13px;color:#9AA5B4;padding:0 16px 8px">248 объявлений</div>
+    <div class="pcard" onclick="go('detail')">
+      <div class="pimg">🛞<span style="position:absolute;top:4px;left:4px" class="bn">НОВЫЕ</span></div>
+      <div class="pinfo">
+        <div class="pname">Bridgestone Turanza T005</div>
+        <div class="psize">215/60 R16 · 4 шт.</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><i class="ti ti-star" style="font-size:12px;color:#E8A020"></i><span style="font-size:12px;color:#6B7280">4.9 · 32 отзыва</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">84 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="go('detail')">
+      <div class="pimg">🔄<span style="position:absolute;top:4px;left:4px" class="bu">Б/У</span></div>
+      <div class="pinfo">
+        <div class="pname">Michelin Primacy 4</div>
+        <div class="psize">205/55 R16 · 2 шт.</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><i class="ti ti-star" style="font-size:12px;color:#E8A020"></i><span style="font-size:12px;color:#6B7280">4.7 · 8 отзывов</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">22 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="go('detail')">
+      <div class="pimg">❄️<span style="position:absolute;top:4px;left:4px" class="bn">НОВЫЕ</span></div>
+      <div class="pinfo">
+        <div class="pname">Nokian Hakkapeliitta R3</div>
+        <div class="psize">215/65 R16 · 4 шт.</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><i class="ti ti-star" style="font-size:12px;color:#E8A020"></i><span style="font-size:12px;color:#6B7280">5.0 · 44 отзыва</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">96 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+      </div>
+    </div>
+    <div class="pcard">
+      <div class="pimg">🛞<span style="position:absolute;top:4px;left:4px" class="bn">НОВЫЕ</span></div>
+      <div class="pinfo">
+        <div class="pname">Continental SportContact 5</div>
+        <div class="psize">225/45 R17 · 4 шт.</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><i class="ti ti-star" style="font-size:12px;color:#E8A020"></i><span style="font-size:12px;color:#6B7280">4.8 · 17 отзывов</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="pprice">120 000 ₸</span><button class="hbtn" onclick="heart(this,event)"><i class="ti ti-heart"></i></button></div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <button class="ti-btn" onclick="go('home')"><i class="ti ti-home"></i>Главная</button>
+    <button class="ti-btn on"><i class="ti ti-search"></i>Поиск</button>
+    <button class="sell-fab" onclick="go('sell')"><i class="ti ti-plus"></i><span style="font-size:9px">Продать</span></button>
+    <button class="ti-btn"><i class="ti ti-message-circle"></i>Чат</button>
+    <button class="ti-btn" onclick="go('profile')"><i class="ti ti-user"></i>Профиль</button>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="s-detail" class="scr">
+  <div class="gallery">
+    🛞
+    <button class="gbk" onclick="go('catalog')"><i class="ti ti-arrow-left"></i></button>
+    <button class="gsh" onclick="heart(this,null)"><i class="ti ti-heart"></i></button>
+    <div class="gdots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+  <div class="scroll-area">
+    <div style="padding:14px;background:#F0F2F5">
+      <div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px">
+          <span class="bn">Новые</span>
+          <div style="display:flex;align-items:center;gap:4px;cursor:pointer" onclick="go('reviews')">
+            <i class="ti ti-star" style="font-size:14px;color:#E8A020"></i>
+            <span style="font-size:13px;font-weight:500;color:#1A1C23">4.9</span>
+            <span style="font-size:12px;color:#9AA5B4">(32) ›</span>
+          </div>
+        </div>
+        <div style="font-size:18px;font-weight:500;color:#1A1C23;margin-bottom:3px">Bridgestone Turanza T005</div>
+        <div style="font-size:14px;color:#6B7280;margin-bottom:10px">215/60 R16 · 4 штуки · Лето</div>
+        <div style="font-size:26px;font-weight:500;color:#1A3A6B;margin-bottom:3px">84 000 ₸</div>
+        <div style="font-size:12px;color:#B45309;margin-bottom:14px;display:flex;align-items:center;gap:4px"><i class="ti ti-credit-card" style="font-size:14px"></i>Рассрочка Kaspi: 3 500 ₸/мес · 0-0-24</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="ichip">☀️ Лето</span><span class="ichip">🇯🇵 Япония</span><span class="ichip">2023 г.</span><span class="ichip">Гарантия 2 г.</span>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+        <div style="font-size:15px;font-weight:500;color:#1A1C23;margin-bottom:8px">Описание</div>
+        <div style="font-size:13px;color:#4B5563;line-height:1.6">Летние шины для легковых автомобилей. Отличное сцепление на сухом и мокром асфальте. Подходят для Toyota Camry, Kia Rio, Hyundai Sonata.</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+        <i class="ti ti-map-pin" style="color:#1A3A6B;font-size:20px"></i>
+        <div><div style="font-size:14px;font-weight:500;color:#1A1C23">Алматы, Бостандык</div><div style="font-size:12px;color:#6B7280">Доставка: 2 000 ₸ · 1–2 дня</div></div>
+      </div>
+      <div class="seller-card">
+        <div class="savatar">АТ</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span style="font-size:14px;font-weight:500;color:#1A1C23">АвтоТрейд Алматы</span>
+            <span class="bv">✓ Проверен</span>
+          </div>
+          <div style="font-size:12px;color:#6B7280;display:flex;align-items:center;gap:3px"><i class="ti ti-star" style="color:#E8A020"></i>4.9 · 128 сделок</div>
+        </div>
+        <button class="btn-icon"><i class="ti ti-phone"></i></button>
+      </div>
+      <div style="display:flex;gap:8px;padding-bottom:16px">
+        <button class="btn-sec" onclick="go('reviews')"><i class="ti ti-message-circle"></i></button>
+        <button class="btn-main" style="flex:1" onclick="go('pay')">Купить за 84 000 ₸</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELL -->
+<div id="s-sell" class="scr">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="go('home')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="topbar-title">Подать объявление</div><div class="topbar-sub">Хабарландыру беру</div></div>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:2px">
+    <div class="form-section">
+      <label class="form-label">Тип товара</label>
+      <div style="display:flex;gap:8px">
+        <button id="sell-new" onclick="sellType('new')" style="flex:1;padding:11px;border-radius:10px;border:2px solid #1A3A6B;background:#E6F1FB;color:#0C447C;font-size:14px;font-weight:500;cursor:pointer">Новые 🛞</button>
+        <button id="sell-used" onclick="sellType('used')" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid #E5E7EB;background:#fff;color:#6B7280;font-size:14px;cursor:pointer">Б/у 🔄</button>
+      </div>
+      <label class="form-label">Фото (минимум 3)</label>
+      <div class="photo-row">
+        <div class="photo-slot filled">🛞</div>
+        <div class="photo-slot filled">🛞</div>
+        <div class="photo-slot filled">🛞</div>
+        <div class="photo-slot"><i class="ti ti-plus"></i></div>
+      </div>
+      <label class="form-label">Бренд</label>
+      <select class="fselect"><option>Bridgestone</option><option>Michelin</option><option>Pirelli</option><option>Continental</option><option>Nokian</option><option>Другой</option></select>
+      <label class="form-label">Размер шины</label>
+      <div style="display:flex;gap:8px">
+        <input class="finput" style="flex:1" placeholder="215" type="number">
+        <input class="finput" style="flex:1" placeholder="60" type="number">
+        <input class="finput" style="flex:1" placeholder="R16" type="text">
+      </div>
+      <label class="form-label">Сезон</label>
+      <select class="fselect"><option>Летние</option><option>Зимние</option><option>Всесезонные</option></select>
+      <label class="form-label">Количество</label>
+      <select class="fselect"><option>1 шт.</option><option>2 шт.</option><option>4 шт.</option></select>
+      <label class="form-label">Состояние</label>
+      <select class="fselect"><option>Новые</option><option>Отличное — как новые</option><option>Хорошее — небольшой пробег</option><option>Удовлетворительное</option></select>
+      <label class="form-label">Цена</label>
+      <div style="position:relative">
+        <input class="finput" placeholder="0" type="number" style="padding-right:36px">
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#6B7280;font-weight:500">₸</span>
+      </div>
+      <label class="form-label">Город</label>
+      <select class="fselect"><option>Алматы</option><option>Астана</option><option>Шымкент</option><option>Атырау</option></select>
+      <label class="form-label">Описание</label>
+      <textarea class="finput" rows="3" placeholder="Расскажите о состоянии шин..." style="resize:none;height:80px"></textarea>
+    </div>
+    <div style="padding:14px 16px 28px">
+      <button class="btn-main" style="width:100%;font-size:16px;padding:16px" onclick="go('home')">Опубликовать объявление</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAY -->
+<div id="s-pay" class="scr">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="go('detail')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="topbar-title">Оформление заказа</div><div class="topbar-sub">Тапсырысты рәсімдеу</div></div>
+    </div>
+  </div>
+  <div class="scroll-area">
+    <div class="step-row">
+      <div class="step done"><div class="step-circle"><i class="ti ti-check" style="font-size:13px"></i></div><div class="step-label">Товар</div></div>
+      <div class="step-line done"></div>
+      <div class="step cur"><div class="step-circle">2</div><div class="step-label">Оплата</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-circle">3</div><div class="step-label">Готово</div></div>
+    </div>
+    <div class="order-summary">
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center">
+        <div style="width:56px;height:56px;border-radius:12px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;font-size:28px">🛞</div>
+        <div><div style="font-size:14px;font-weight:500;color:#1A1C23">Bridgestone Turanza T005</div><div style="font-size:12px;color:#6B7280;margin-top:2px">215/60 R16 · 4 шт.</div></div>
+      </div>
+      <div class="orow"><span style="color:#6B7280">Товар</span><span style="color:#1A1C23">84 000 ₸</span></div>
+      <div class="orow"><span style="color:#6B7280">Доставка</span><span style="color:#1A1C23">2 000 ₸</span></div>
+      <div class="orow"><span>Итого</span><span>86 000 ₸</span></div>
+    </div>
+    <div class="sec-title" style="padding-top:16px">Адрес доставки</div>
+    <div class="form-section" style="margin-top:0">
+      <input class="finput" value="ул. Абая, 150" type="text">
+      <div style="margin-top:10px"><select class="fselect"><option>Алматы</option><option>Астана</option><option>Шымкент</option></select></div>
+    </div>
+    <div class="sec-title" style="padding-top:16px">Способ оплаты</div>
+    <div class="pay-option sel" onclick="selPay(this)">
+      <div class="pay-radio"><div class="pay-radio-inner"></div></div>
+      <div style="font-size:22px">💳</div>
+      <div><div style="font-size:15px;font-weight:500;color:#1A1C23">Kaspi Pay</div><div style="font-size:12px;color:#6B7280">Мгновенно · Рассрочка 0-0-24</div></div>
+    </div>
+    <div class="pay-option" onclick="selPay(this)">
+      <div class="pay-radio"><div class="pay-radio-inner"></div></div>
+      <div style="font-size:22px">💵</div>
+      <div><div style="font-size:15px;font-weight:500;color:#1A1C23">Наличные при получении</div><div style="font-size:12px;color:#6B7280">Оплата курьеру</div></div>
+    </div>
+    <div class="pay-option" onclick="selPay(this)">
+      <div class="pay-radio"><div class="pay-radio-inner"></div></div>
+      <div style="font-size:22px">🏦</div>
+      <div><div style="font-size:15px;font-weight:500;color:#1A1C23">Карта Visa / Mastercard</div><div style="font-size:12px;color:#6B7280">Онлайн через 3D-Secure</div></div>
+    </div>
+    <div style="padding:14px 16px 28px">
+      <button class="btn-main" style="width:100%;font-size:16px;padding:16px" onclick="go('history')">Подтвердить · 86 000 ₸</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<div id="s-reviews" class="scr">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="go('detail')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="topbar-title">Отзывы о товаре</div><div class="topbar-sub">Bridgestone Turanza T005</div></div>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:12px">
+    <div class="rating-big">
+      <div><div class="rating-num">4.9</div><div style="font-size:12px;color:#6B7280;margin-top:4px">32 отзыва</div></div>
+      <div style="flex:1">
+        <div class="rbar-row"><span style="font-size:12px;color:#6B7280;width:10px">5</span><div class="rbar-track"><div class="rbar-fill" style="width:85%"></div></div><span style="font-size:12px;color:#6B7280">27</span></div>
+        <div class="rbar-row"><span style="font-size:12px;color:#6B7280;width:10px">4</span><div class="rbar-track"><div class="rbar-fill" style="width:13%"></div></div><span style="font-size:12px;color:#6B7280">4</span></div>
+        <div class="rbar-row"><span style="font-size:12px;color:#6B7280;width:10px">3</span><div class="rbar-track"><div class="rbar-fill" style="width:3%"></div></div><span style="font-size:12px;color:#6B7280">1</span></div>
+        <div class="rbar-row"><span style="font-size:12px;color:#6B7280;width:10px">2</span><div class="rbar-track"><div class="rbar-fill" style="width:0%"></div></div><span style="font-size:12px;color:#6B7280">0</span></div>
+        <div class="rbar-row"><span style="font-size:12px;color:#6B7280;width:10px">1</span><div class="rbar-track"><div class="rbar-fill" style="width:0%"></div></div><span style="font-size:12px;color:#6B7280">0</span></div>
+      </div>
+    </div>
+    <div class="sec-title">Отзывы покупателей</div>
+    <div class="rev-card">
+      <div class="rev-head">
+        <div class="rev-avatar" style="background:#E6F1FB;color:#0C447C">ДА</div>
+        <div><div class="rev-name">Дамир Ахметов</div><div class="rev-date">12 июня 2025</div></div>
+        <div style="margin-left:auto"><span class="bv" style="font-size:10px">✓ Покупатель</span></div>
+      </div>
+      <div class="rev-stars"><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i></div>
+      <div class="rev-text">Отличные шины! Поставил на Camry, стало значительно тише. Доставка на следующий день. Буду заказывать снова.</div>
+      <div style="display:flex;gap:8px"><div class="rev-photo">🛞</div><div class="rev-photo">🚗</div></div>
+    </div>
+    <div class="rev-card">
+      <div class="rev-head">
+        <div class="rev-avatar" style="background:#FBEAF0;color:#72243E">СА</div>
+        <div><div class="rev-name">Сауле Алиева</div><div class="rev-date">3 мая 2025</div></div>
+        <div style="margin-left:auto"><span class="bv" style="font-size:10px">✓ Покупатель</span></div>
+      </div>
+      <div class="rev-stars"><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#D1D5DB"></i></div>
+      <div class="rev-text">Шины хорошие, но упаковка чуть помята. Сами без дефектов. Продавец отзывчивый, ответил быстро.</div>
+    </div>
+    <div class="rev-card">
+      <div class="rev-head">
+        <div class="rev-avatar" style="background:#EAF3DE;color:#27500A">НТ</div>
+        <div><div class="rev-name">Нурлан Тлеуов</div><div class="rev-date">18 апреля 2025</div></div>
+        <div style="margin-left:auto"><span class="bv" style="font-size:10px">✓ Покупатель</span></div>
+      </div>
+      <div class="rev-stars"><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i><i class="ti ti-star" style="font-size:16px;color:#E8A020"></i></div>
+      <div class="rev-text">Брал для Rio. Всё соответствует описанию. Kaspi рассрочка — очень удобно. Рекомендую!</div>
+    </div>
+    <div style="padding:12px 16px 28px">
+      <button class="btn-main" style="width:100%;padding:14px">Написать отзыв</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="s-history" class="scr">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="go('profile')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="topbar-title">История заказов</div><div class="topbar-sub">Тапсырыстар тарихы</div></div>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:12px">
+    <div class="hist-item">
+      <span class="hist-status hs-del">✓ Доставлен · 15 июня 2025</span>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="hist-img">🛞</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500;color:#1A1C23;margin-bottom:2px">Bridgestone Turanza T005</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:6px">215/60 R16 · 4 шт. · Новые</div>
+          <div style="font-size:15px;font-weight:500;color:#1A3A6B">84 000 ₸</div>
+          <div style="font-size:11px;color:#9AA5B4;margin-top:2px">Заказ #KZ-20250615-4821</div>
+        </div>
+      </div>
+      <div class="reo-btn">
+        <button onclick="go('reviews')">Оставить отзыв ›</button>
+        <button class="rb-main" onclick="go('detail')">Купить снова</button>
+      </div>
+    </div>
+    <div class="hist-item">
+      <span class="hist-status hs-wait">⏳ В пути · Ожидается 20 июня</span>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="hist-img">❄️</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500;color:#1A1C23;margin-bottom:2px">Nokian Hakkapeliitta R3</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:6px">215/65 R16 · 4 шт. · Новые</div>
+          <div style="font-size:15px;font-weight:500;color:#1A3A6B">96 000 ₸</div>
+          <div style="font-size:11px;color:#9AA5B4;margin-top:2px">Заказ #KZ-20250618-5104</div>
+        </div>
+      </div>
+      <div class="reo-btn">
+        <button>Отследить ›</button>
+        <button class="rb-main">Связаться</button>
+      </div>
+    </div>
+    <div class="hist-item">
+      <span class="hist-status hs-del">✓ Доставлен · 2 марта 2025</span>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="hist-img">🔄</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500;color:#1A1C23;margin-bottom:2px">Michelin Primacy 4</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:6px">205/55 R16 · 2 шт. · Б/у</div>
+          <div style="font-size:15px;font-weight:500;color:#1A3A6B">22 000 ₸</div>
+          <div style="font-size:11px;color:#9AA5B4;margin-top:2px">Заказ #KZ-20250302-2247</div>
+        </div>
+      </div>
+      <div class="reo-btn">
+        <button>Отзыв оставлен ✓</button>
+        <button class="rb-main" onclick="go('detail')">Купить снова</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="s-profile" class="scr">
+  <div class="profile-hdr">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+      <div class="pavatar">АД</div>
+      <div><div style="font-size:18px;font-weight:500;color:#fff">Асель Джаксыбекова</div><div style="font-size:13px;color:rgba(255,255,255,0.65);margin-top:2px">+7 701 *** ** 45</div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:rgba(255,255,255,0.65)">Тіл / Язык</span>
+      <div style="display:flex;border:1px solid rgba(255,255,255,0.3);border-radius:8px;overflow:hidden">
+        <button id="lr" onclick="langSwitch('ru')" style="padding:6px 14px;font-size:13px;background:rgba(255,255,255,0.2);border:none;color:#fff;cursor:pointer;font-weight:500">Рус</button>
+        <button id="lk" onclick="langSwitch('kz')" style="padding:6px 14px;font-size:13px;background:none;border:none;color:rgba(255,255,255,0.65);cursor:pointer">Қаз</button>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-area">
+    <div style="background:#fff;margin:12px 16px 0;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+      <div class="menu-item" onclick="go('history')"><div class="mic" style="background:#EAF3DE"><i class="ti ti-clock" style="color:#3B6D11;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">История заказов</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+      <div class="menu-item"><div class="mic" style="background:#FBEAF0"><i class="ti ti-heart" style="color:#993556;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">Избранное / Таңдаулы</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+      <div class="menu-item" onclick="go('sell')"><div class="mic" style="background:#FAEEDA"><i class="ti ti-tag" style="color:#854F0B;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">Мои объявления</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+      <div class="menu-item"><div class="mic" style="background:#E6F1FB"><i class="ti ti-message-circle" style="color:#185FA5;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">Сообщения / Хабарлар</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+    </div>
+    <div style="background:#fff;margin:10px 16px 0;border-radius:16px;overflow:hidden;padding:14px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+      <div style="font-size:12px;font-weight:500;color:#9AA5B4;margin-bottom:12px">ДОСТУПНОСТЬ / ҚОЛЖЕТІМДІЛІК</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.05)">
+        <span style="font-size:15px;color:#1A1C23">Крупный шрифт</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="tthumb"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.05)">
+        <span style="font-size:15px;color:#1A1C23">Высокий контраст</span>
+        <div class="toggle" onclick="this.classList.toggle('on')"><div class="tthumb"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+        <span style="font-size:15px;color:#1A1C23">Push-уведомления</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="tthumb"></div></div>
+      </div>
+    </div>
+    <div style="background:#fff;margin:10px 16px 16px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.07)">
+      <div class="menu-item"><div class="mic" style="background:#F1EFE8"><i class="ti ti-help-circle" style="color:#888780;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">FAQ / Помощь</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+      <div class="menu-item"><div class="mic" style="background:#EAF3DE"><i class="ti ti-shield-check" style="color:#3B6D11;font-size:18px"></i></div><span style="flex:1;font-size:15px;color:#1A1C23">Безопасность</span><i class="ti ti-chevron-right" style="color:#D1D5DB"></i></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <button class="ti-btn" onclick="go('home')"><i class="ti ti-home"></i>Главная</button>
+    <button class="ti-btn" onclick="go('catalog')"><i class="ti ti-search"></i>Поиск</button>
+    <button class="sell-fab" onclick="go('sell')"><i class="ti ti-plus"></i><span style="font-size:9px">Продать</span></button>
+    <button class="ti-btn"><i class="ti ti-message-circle"></i>Чат</button>
+    <button class="ti-btn on"><i class="ti ti-user"></i>Профиль</button>
+  </div>
+</div>
+
+</div>
+<script>
+var SS=['onboard','home','catalog','detail','sell','pay','reviews','history','profile'];
+function go(id){
+  SS.forEach(function(s){var e=document.getElementById('s-'+s);if(e)e.classList.remove('on');});
+  var t=document.getElementById('s-'+id);
+  if(t){t.classList.add('on');var sa=t.querySelector('.scroll-area');if(sa)sa.scrollTop=0;}
+}
+function heart(btn,e){if(e)e.stopPropagation();btn.classList.toggle('liked');}
+function selPay(el){document.querySelectorAll('.pay-option').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');}
+function sellType(t){
+  var n=document.getElementById('sell-new'),u=document.getElementById('sell-used');
+  if(t==='new'){n.style.cssText='flex:1;padding:11px;border-radius:10px;border:2px solid #1A3A6B;background:#E6F1FB;color:#0C447C;font-size:14px;font-weight:500;cursor:pointer';u.style.cssText='flex:1;padding:11px;border-radius:10px;border:1.5px solid #E5E7EB;background:#fff;color:#6B7280;font-size:14px;cursor:pointer';}
+  else{u.style.cssText='flex:1;padding:11px;border-radius:10px;border:2px solid #E8A020;background:#FAEEDA;color:#633806;font-size:14px;font-weight:500;cursor:pointer';n.style.cssText='flex:1;padding:11px;border-radius:10px;border:1.5px solid #E5E7EB;background:#fff;color:#6B7280;font-size:14px;cursor:pointer';}
+}
+function selLang(l){
+  document.getElementById('lang-ru').classList.toggle('sel',l==='ru');
+  document.getElementById('lang-kz').classList.toggle('sel',l==='kz');
+}
+function langSwitch(l){
+  var r=document.getElementById('lr'),k=document.getElementById('lk');
+  r.style.cssText='padding:6px 14px;font-size:13px;border:none;cursor:pointer;'+(l==='ru'?'background:rgba(255,255,255,0.2);color:#fff;font-weight:500':'background:none;color:rgba(255,255,255,0.65)');
+  k.style.cssText='padding:6px 14px;font-size:13px;border:none;cursor:pointer;'+(l==='kz'?'background:rgba(255,255,255,0.2);color:#fff;font-weight:500':'background:none;color:rgba(255,255,255,0.65)');
+}
+function tick(){var n=new Date();var h=n.getHours();var m=n.getMinutes();document.getElementById('time-display').textContent=h+':'+(m<10?'0':'')+m;}
+tick();setInterval(tick,30000);
+</script>
+</body>
+</html>
